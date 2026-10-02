@@ -49,7 +49,7 @@ Xcode Bingo (Clean Build Folder, Reset Package Caches… auto-marked by tool cal
 
 - Mods can't see MCP progress notifications → build progress must come from polling `GetBuildLog` (`buildIsRunning`, `buildLogEntries[].buildTask`, `emittedIssues[]`). Real % not available. Maybe tail `fullLogPath` via `$.fs`.
 - `BuildProject` result (structuredContent): `buildResult`, `errors[] {classification, filePath, lineNumber, message}`, `elapsedTime`, `fullLogPath`.
-- Headless: tools take `workspaceIdentifier` (abs project path OK) instead of `tabIdentifier`. Extra tools: `XcodeOpenWorkspace`, `XcodeListWorkspaces`, `XcodeCloseWorkspace`, `XcodeNewProject`, `XcodeWrite`, `XcodeUpdate`.
+- Headless: tools take `workspaceIdentifier` (id from `XcodeListWorkspaces`; abs path not reliable, see below) instead of `tabIdentifier`. Extra tools: `XcodeOpenWorkspace`, `XcodeListWorkspaces`, `XcodeCloseWorkspace`, `XcodeNewProject`, `XcodeWrite`, `XcodeUpdate`.
 - Mod API: `Image` (terminal, kitty/Ghostty), `Code`, `Markdown`, `Select`, `Button`, `Link`; `$.mcp.call(server, tool, args)` → `{content, isError, structuredContent}`; `tool.call` hook on `mcp__xcode__BuildProject` etc.
 - Inspiration: cctop (btop-style pane), claude-agent-flow (live tree pane), vercel-deploys (polling), cc-arcade (band games), claude-slots (spinner).
 

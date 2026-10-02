@@ -50,7 +50,7 @@ It picks up Claude's own Xcode tool calls too. When Claude builds, runs tests, l
    /plugin install xcode-mods@xcode-mods
    ```
 
-Open Claude Code in a folder with an `.xcodeproj` or `.xcworkspace` (up to 3 levels deep). The band appears above the prompt. In other folders the plugin stays hidden and don't register any commands.
+Open Claude Code in a folder with an `.xcodeproj` or `.xcworkspace` (up to 3 levels deep). The band appears above the prompt. In other folders the plugin stays hidden and doesn't register any commands.
 
 ## Usage
 

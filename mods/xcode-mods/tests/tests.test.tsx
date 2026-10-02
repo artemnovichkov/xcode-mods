@@ -86,3 +86,30 @@ test('agent RunAllTests with a text-only result shows the failure', async ($, on
 
   expect(await pane.find({ text: /1 passed · 1 failed/ })).toBeDefined()
 })
+
+test('a failed test list shows the error once, Reload retries', async ($, on) => {
+  mock.clock(on)
+  let lists = 0
+  let isBroken = true
+  on('session.cwd', () => ({ value: '/tmp/App' }))
+  on('process.run', () => ({ value: { exitCode: 0, stdout: '/tmp/App/App.xcodeproj\n', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  on('mcp.call', ($, e) => {
+    if (e.tool === 'GetTestList') {
+      lists++
+      if (isBroken) return { value: { content: [{ type: 'text', text: 'Scheme has no test action' }], isError: true } }
+    }
+    return { value: { content: [], isError: false, structuredContent: answers[e.tool] } }
+  })
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+
+  const pane = await $.ui.mount({ plugin: 'xcode-mods', surface: 'terminal', component: 'Pane', requestId: 'xcode', props: PANE_PROPS })
+  await pane.press({ key: 'tab-tests' })
+  expect(await pane.find({ text: /Scheme has no test action/ })).toBeDefined()
+  expect(await pane.find({ text: /Scheme has no test action/ })).toBeDefined()
+  expect(lists).toBe(1)
+
+  isBroken = false
+  await pane.press({ key: 'test-reload' })
+  expect(await pane.find({ text: /a\(\)/ })).toBeDefined()
+  expect(lists).toBe(2)
+})

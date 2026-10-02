@@ -316,6 +316,24 @@ async function loadTests($: EngineInterface): Promise<XcodeTest[]> {
   return merged
 }
 
+// List errors land in the Tests tab instead of rejecting.
+async function reloadTests($: EngineInterface) {
+  await update($, tests, (v): XcodeTests => (v.status === 'idle' ? { ...v, status: 'loading', error: undefined } : v))
+  try {
+    await loadTests($)
+    await update($, tests, (v): XcodeTests => (v.status === 'loading' ? { ...v, status: 'idle' } : v))
+  } catch (err) {
+    await update($, tests, (v): XcodeTests => ({ ...v, status: 'idle', error: String((err as Error).message ?? err) }))
+  }
+}
+
+// Renders can't write state, so the Tests tab loads its list when picked.
+async function selectTab($: EngineInterface, v: XcodeTab) {
+  await update($, tab, () => v)
+  const ts = await read($, tests)
+  if (v === 'tests' && ts.tests.length === 0 && ts.status === 'idle') await reloadTests($)
+}
+
 let testTick: { cancel: () => void } | null = null
 
 async function startTests($: EngineInterface, only: TestSpec[] | null) {
@@ -764,8 +782,8 @@ export const register: Register = on => {
     const failedTests = ts.tests.filter(x => x.state === 'failed').length
     const act = activity(b, ts, r, now)
     const openTab = (v: XcodeTab) => async () => {
-      await update($, tab, () => v)
       await $.ui.open({ id: PANE, title: 'Xcode' })
+      await selectTab($, v)
     }
 
     return (
@@ -813,7 +831,7 @@ export const register: Register = on => {
     const now = await $.clock.now()
     const room = Math.max(3, (e.viewport?.rows ?? 24) - 8)
     const width = e.props.bodyColumns
-    const setTab = (v: XcodeTab) => () => void update($, tab, () => v)
+    const setTab = (v: XcodeTab) => () => void selectTab($, v)
     const errors = b.issues.filter(i => i.severity === 'error')
     const warnings = b.issues.filter(i => i.severity !== 'error')
     const failedTests = ts.tests.filter(t => t.state === 'failed').length
@@ -836,14 +854,6 @@ export const register: Register = on => {
     let moreActions
     let body
     if (current === 'tests') {
-      if (ts.tests.length === 0 && ts.status === 'idle') {
-        void update($, tests, (v): XcodeTests => (v.status === 'idle' ? { ...v, status: 'loading' } : v))
-        void loadTests($)
-          .then(() => update($, tests, (v): XcodeTests => (v.status === 'loading' ? { ...v, status: 'idle' } : v)))
-          .catch(err =>
-            update($, tests, (v): XcodeTests => ({ ...v, status: 'idle', error: String((err as Error).message ?? err) })),
-          )
-      }
       const icon: Record<XcodeTestState, [string, string | undefined]> = {
         idle: ['◇', undefined],
         running: ['◐', 'yellow'],
@@ -867,7 +877,7 @@ export const register: Register = on => {
         <Box flexDirection="row" gap={1}>
           <Button key="test-all" label="▶ Test (t)" hotkey="t" variant="primary" onPress={() => void runTests($, null)} />
           {failedTests > 0 && <Button key="test-failed" label="↻ Failed (f)" hotkey="f" onPress={() => void rerunFailed($)} />}
-          <Button key="test-reload" label="Reload (l)" hotkey="l" onPress={() => void loadTests($)} />
+          <Button key="test-reload" label="Reload (l)" hotkey="l" onPress={() => void reloadTests($)} />
         </Box>
       )
       moreActions = failedTests > 0 && (
