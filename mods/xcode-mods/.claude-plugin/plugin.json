@@ -1,0 +1,21 @@
+{
+  "name": "xcode-mods",
+  "version": "0.1.0",
+  "description": "Xcode in Claude Code: build, run and tests pane, scheme/destination band, notifications and SwiftUI previews over headless Xcode MCP",
+  "author": {
+    "name": "Artem Novichkov",
+    "email": "mail@artemnovichkov.com",
+    "url": "https://artemnovichkov.com"
+  },
+  "homepage": "https://github.com/artemnovichkov/xcode-mods",
+  "repository": "https://github.com/artemnovichkov/xcode-mods",
+  "license": "MIT",
+  "keywords": [
+    "xcode",
+    "ios",
+    "swiftui",
+    "mcp",
+    "mods"
+  ],
+  "types": "./types/index.d.ts"
+}

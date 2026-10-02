@@ -1,0 +1,35 @@
+name: Sandbox
+options:
+  bundleIdPrefix: com.artemnovichkov
+  deploymentTarget:
+    iOS: "27.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: YES
+targets:
+  Sandbox:
+    type: application
+    platform: iOS
+    sources: [Sandbox]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.artemnovichkov.Sandbox
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+  SandboxTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [SandboxTests]
+    dependencies:
+      - target: Sandbox
+schemes:
+  Sandbox:
+    build:
+      targets:
+        Sandbox: all
+        SandboxTests: [test]
+    test:
+      targets: [SandboxTests]
