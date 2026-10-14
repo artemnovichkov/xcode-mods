@@ -1,5 +1,7 @@
 # xcode-mods
 
+[![HOL Trust Score](https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3Dartemnovichkov%252Fxcode-mods%26metric%3Dtrust%26style%3Dflat)](https://hol.org/registry/plugins/artemnovichkov%2Fxcode-mods)
+
 Xcode's build, tests, console and SwiftUI previews inside [Claude Code](https://claude.com/claude-code), built on the headless Xcode MCP server.
 
 ![Claude fixes a build error while the Xcode pane shows the result](docs/media/hero.png)
